@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>26 · random chat</title>
+    <!-- Font Awesome Icons (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #0b0e14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+        }
+
+        .app-container {
+            max-width: 420px;
+            width: 100%;
+            background: #141a24;
+            border-radius: 44px 44px 32px 32px;
+            box-shadow: 0 25px 50px -8px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+            overflow: hidden;
+            padding: 20px 18px 28px;
+            transition: all 0.2s;
+            backdrop-filter: blur(2px);
+            border: 1px solid #2a3340;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px 18px 4px;
+            border-bottom: 1px solid #25303e;
+        }
+
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .brand h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(145deg, #f0f4ff, #b7cbff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 12px rgba(70, 130, 255, 0.2);
+        }
+
+        .brand span {
+            font-size: 14px;
+            font-weight: 400;
+            color: #8395b0;
+            background: #1f2a38;
+            padding: 4px 12px;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+            border: 1px solid #314054;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            color: #9aafcc;
+        }
+
+        .header-actions i {
+            font-size: 20px;
+            background: #1f2a38;
+            padding: 8px;
+            border-radius: 30px;
+            border: 1px solid #2b384a;
+            transition: 0.2s;
+            cursor: default;
+        }
+
+        .connection-status {
+            background: #1b2533;
+            margin: 20px 0 18px;
+            padding: 16px 18px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #2d3c4e;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pulse-dot {
+            width: 14px;
+            height: 14px;
+            background: #2ecc71;
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .pulse-dot.busy {
+            background: #f1c40f;
+            box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.3);
+        }
+
+        .status-text {
+            color: #eaf0fa;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .status-text small {
+            color: #8aa0be;
+            font-weight: 400;
+            font-size: 14px;
+            margin-left: 6px;
+        }
+
+        .random-badge {
+            background: #2b3c52;
+            padding: 6px 16px;
+            border-radius: 40px;
+            color: #b3cbff;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #3d526e;
+            cursor: default;
+        }
+
+        .call-avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 24px 0 20px;
+        }
+
+        .avatar-ring {
+            background: linear-gradient(145deg, #283549, #1a2330);
+            padding: 8px;
+            border-radius: 100%;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+            border: 1px solid #3b4d66;
+        }
+
+        .avatar-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 100%;
+            background: #202b3b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            color: #b3cbff;
+            border: 2px solid #3e5779;
+            background: #1a2535;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+            transition: 0.15s;
+        }
+
+        .user-name {
+            margin-top: 14px;
+            color: white;
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            background: #1f2b3b;
+            padding: 6px 22px;
+            border-radius: 60px;
+            border: 1px solid #31465e;
+            transition: 0.15s;
+        }
+
+        .user-name i {
+            color: #5f8eff;
+            font-size: 16px;
+            margin-right: 8px;
+        }
+
+        .call-actions {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin: 28px 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: #1f2b3b;
+            border: none;
+            border-radius: 60px;
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #d6e5ff;
+            font-size: 16px;
+            font-weight: 500;
+            border: 1px solid #31475f;
+            box-shadow: 0 8px 12px -6px rgba(0,0,0,0.5);
+            transition: 0.15s;
+            cursor: pointer;
+            background: #1e2a3a;
+        }
+
+        .action-btn i {
+            font-size: 20px;
+            color: #6d93ff;
+        }
+
+        .action-btn.video i {
+            color: #ff7b9c;
+        }
+
+        .action-btn.chat i {
+            color: #5fdc9c;
+        }
+
+        .action-btn:active {
+            transform: scale(0.94);
+            background: #28374b;
+        }
+
+        .chat-preview {
+            background: #111b27;
+            border-radius: 34px;
+            padding: 18px 18px 12px;
+            margin-top: 12px;
+            border: 1px solid #28374b;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            color: #acc3e5;
+            font-size: 14px;
+            font-weight: 500;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #253341;
+        }
+
+        .chat-header i {
+            color: #5f8eff;
+        }
+
+        .chat-messages {
+            padding: 10px 0 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 140px;
+            overflow-y: auto;
+        }
+
+        .msg {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #c2d6f5;
+            font-size: 15px;
+        }
+
+        .msg i {
+            color: #4b6a94;
+            width: 24px;
+            font-size: 14px;
+        }
+
+        .msg span {
+            background: #1a2636;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid #2b3d55;
+            width: 100%;
+        }
+
+        .msg.self {
+            flex-direction: row-reverse;
+        }
+
+        .msg.self span {
+            background: #1f3147;
+            border-color: #3c5779;
+            color: #eaf2ff;
+        }
+
+        .msg-input-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #111c2a;
+            padding: 4px 4px 4px 16px;
+            border-radius: 60px;
+            margin-top: 14px;
+            border: 1px solid #2b3f57;
+        }
+
+        .msg-input-area input {
+            background: transparent;
+            border: none;
+            flex: 1;
+            padding: 12px 0;
+            color: #e4efff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .msg-input-area input::placeholder {
+            color: #5a7393;
+            font-weight: 300;
+        }
+
+        .msg-input-area button {
+            background: #2a405c;
+            border: none;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 60px;
+            font-size: 22px;
+            background: #3b577c;
+            border: 1px solid #5778a3;
+            transition: 0.1s;
+            cursor: pointer;
+        }
+
+        .msg-input-area button i {
+            color: #d0e2ff;
+        }
+
+        .msg-input-area button:active {
+            transform: scale(0.92);
+        }
+
+        .footer-actions {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .footer-btn {
+            background: #1c283a;
+            border: 1px solid #314a64;
+            border-radius: 60px;
+            padding: 12px 28px;
+            color: #b6cef5;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            box-shadow: 0 6px 12px -4px #00000055;
+            transition: 0.1s;
+            cursor: pointer;
+        }
+
+        .footer-btn i {
+            color: #6f96ff;
+        }
+
+        .footer-btn.next i {
+            color: #ff9f7c;
+        }
+
+        .footer-btn:active {
+            transform: scale(0.94);
+        }
+
+        .footer-btn.end-call {
+            background: #3c2a2a;
+            border-color: #7a4a4a;
+        }
+        .footer-btn.end-call i {
+            color: #ff7b7b;
+        }
+
+        .free-badge {
+            text-align: center;
+            margin-top: 22px;
+            color: #637d9f;
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            background: #111d2b;
+            padding: 8px 16px;
+            border-radius: 60px;
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+            border: 1px solid #2d4058;
+        }
+
+        .free-badge i {
+            color: #5fdc9c;
+            margin-right: 8px;
+        }
+
+        .free-badge span {
+            font-weight: 600;
+            color: #b3d0ff;
+        }
+
+        .action-feedback {
+            text-align: center;
+            margin: 4px 0 2px;
+            font-size: 14px;
+            color: #8aa9d9;
+            min-height: 22px;
+        }
+
+        @media (max-width: 440px) {
+            .app-container { padding: 16px 14px 22px; }
+            .action-btn { padding: 12px 18px; font-size: 14px; }
+            .brand h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="brand">
+                <h1>26</h1>
+                <span>random</span>
+            </div>
+            <div class="header-actions">
+                <i class="fas fa-sliders-h"></i>
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        </div>
+
+        <div class="connection-status">
+            <div class="status-left">
+                <div class="pulse-dot" id="statusDot"></div>
+                <div class="status-text" id="statusText">
+                    Online <small>· 1.2k active</small>
+                </div>
+            </div>
+            <div class="random-badge">
+                <i class="fas fa-random" style="margin-right: 6px;"></i> random
+            </div>
+        </div>
+
+        <div class="call-avatar-section">
+            <div class="avatar-ring">
+                <div class="avatar-img" id="avatarIcon">
+                    <i class="fas fa-user-astronaut"></i>
+                </div>
+            </div>
+            <div class="user-name" id="userNameDisplay">
+                <i class="fas fa-circle" style="color: #2ecc71; font-size: 12px;"></i> 
+                Alex_26
+            </div>
+        </div>
+
+        <div class="action-feedback" id="actionFeedback">✨ click Audio, Video or Chat to start</div>
+
+        <div class="call-actions">
+            <div class="action-btn" id="audioBtn">
+                <i class="fas fa-phone-alt"></i> Audio
+            </div>
+            <div class="action-btn video" id="videoBtn">
+                <i class="fas fa-video"></i> Video
+            </div>
+            <div class="action-btn chat" id="chatBtn">
+                <i class="fas fa-comment-dots"></i> Chat
+            </div>
+        </div>
+
+        <div class="chat-preview">
+            <div class="chat-header">
+                <span><i class="fas fa-comment" style="margin-right: 8px;"></i> live chat</span>
+                <span><i class="far fa-clock"></i> just now</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="msg">
+                    <i class="fas fa-user-circle"></i>
+                    <span>hey! what's up? 👋</span>
+                </div>
+                <div class="msg self">
+                    <i class="fas fa-user-circle" style="color: #6d93ff;"></i>
+                    <span>all good, enjoying random chat</span>
+                </div>
+                <div class="msg">
+                    <i class="fas fa-user-circle"></i>
+                    <span>wanna video call? it's free here 🎥</span>
+                </div>
+            </div>
+            <div class="msg-input-area">
+                <input type="text" id="chatInput" placeholder="Type a message... (free)" value="cool!">
+                <button id="sendMsgBtn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+        <div class="footer-actions">
+            <div class="footer-btn" id="nextBtn">
+                <i class="fas fa-user-plus"></i> Next
+            </div>
+            <div class="footer-btn next" id="randomBtn">
+                <i class="fas fa-random"></i> Random
+            </div>
+            <div class="footer-btn end-call" id="endCallBtn">
+                <i class="fas fa-phone-slash"></i> End
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; margin-top: 8px;">
+            <div class="free-badge">
+                <i class="fas fa-gem"></i> <span>100% free</span> · no coins needed
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 16px; font-size: 12px; color: #3d5575; letter-spacing: 0.3px; border-top: 1px solid #1c2a3a; padding-top: 16px;">
+            <i class="fas fa-bolt" style="color: #5f8eff;"></i> 26 · random audio, video & chat · zero cost
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const avatarIcon = document.getElementById('avatarIcon');
+            const actionFeedback = document.getElementById('actionFeedback');
+            const chatMessages = document.getElementById('chatMessages');
+            const chatInput = document.getElementById('chatInput');
+            const sendMsgBtn = document.getElementById('sendMsgBtn');
+
+            const names = [
+                'Alex_26', 'Mia_42', 'Jay_19', 'Riley_33', 'Sam_27', 
+                'Taylor_21', 'Jordan_38', 'Avery_29', 'Casey_24', 'Quinn_31'
+            ];
+            const avatarIcons = ['fa-user-astronaut', 'fa-user-ninja', 'fa-user-tie', 'fa-user-graduate', 'fa-user-cog', 'fa-user-secret', 'fa-user-circle'];
+
+            let currentUserName = 'Alex_26';
+            let isOnCall = false;
+
+            function randomItem(arr) {
+                return arr[Math.floor(Math.random() * arr.length)];
+            }
+
+            function setRandomPerson() {
+                const newName = randomItem(names);
+                currentUserName = newName;
+                const avatarClass = randomItem(avatarIcons);
+                avatarIcon.innerHTML = `<i class="fas ${avatarClass}"></i>`;
+                if (!isOnCall) {
+                    statusDot.className = 'pulse-dot';
+                    statusText.innerHTML = `Online <small>· 1.2k active</small>`;
+                }
+                userNameDisplay.innerHTML = `<i class="fas fa-circle" style="color: ${isOnCall ? '#f1c40f' : '#2ecc71'}; font-size: 12px;"></i> ${newName}`;
+                actionFeedback.textContent = `🔁 connected with ${newName}`;
+                addChatMessage('system', `you are now connected to ${newName}`);
+            }
+
+            function addChatMessage(type, text) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'msg';
+                if (type === 'self') {
+                    msgDiv.classList.add('self');
+                    msgDiv.innerHTML = `<i class="fas fa-user-circle" style="color: #6d93ff;"></i><span>${text}</span>`;
+                } else if (type === 'system') {
+                    msgDiv.style.justifyContent = 'center';
+                    msgDiv.innerHTML = `<span style="background: #1d2b3d; border-color: #3a526e; color: #aac2e8; text-align: center; width: auto; padding: 4px 18px; font-size: 13px;">${text}</span>`;
+                } else {
+                    msgDiv.innerHTML = `<i class="fas fa-user-circle"></i><span>${text}</span>`;
+                }
+                chatMessages.appendChild(msgDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function sendMessage() {
+                const msg = chatInput.value.trim();
+                if (!msg) return;
+                addChatMessage('self', msg);
+                chatInput.value = '';
+                const replyDelay = 700 + Math.random() * 1200;
+                setTimeout(() => {
+                    const replies = ['nice!', 'haha 😄', 'cool', 'awesome', '👍', 'right?', 'fr', 'lol', 'same', 'okay!'];
+                    addChatMessage('other', randomItem(replies));
+                }, replyDelay);
+            }
+
+            function startCall(type) {
+                if (isOnCall) {
+                    actionFeedback.textContent = `⏳ already on a call, end it first`;
+                    return;
+                }
+                isOnCall = true;
+                statusDot.className = 'pulse-dot busy';
+                statusText.innerHTML = `On call <small>· ${type}</small>`;
+                userNameDisplay.innerHTML = `<i class="fas fa-circle" style="color: #f1c40f; font-size: 12px;"></i> ${currentUserName}`;
+                actionFeedback.textContent = `📞 ${type} call started with ${currentUserName}`;
+                const dot = userNameDisplay.querySelector('i');
+                if (dot) dot.style.color = '#f1c40f';
+                addChatMessage('system', `🔊 ${type} call started`);
+            }
+
+            function endCall() {
+                if (!isOnCall) {
+                    actionFeedback.textContent = `⚠️ no active call to end`;
+                    return;
+                }
+                isOnCall = false;
+                statusDot.className = 'pulse-dot';
+                statusText.innerHTML = `Online <small>· 1.2k active</small>`;
+                userNameDisplay.innerHTML = `<i class="fas fa-circle" style="color: #2ecc71; font-size: 12px;"></i> ${currentUserName}`;
+                actionFeedback.textContent = `📴 call ended with ${currentUserName}`;
+                addChatMessage('system', `call ended`);
+            }
+
+            function handleRandom() {
+                if (isOnCall) {
+                    endCall();
+                }
+                setRandomPerson();
+                addChatMessage('system', `🔄 new random connection`);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            document.getElementById('audioBtn').addEventListener('click', function() {
+                startCall('Audio');
+            });
+            document.getElementById('videoBtn').addEventListener('click', function() {
+                startCall('Video');
+            });
+            document.getElementById('chatBtn').addEventListener('click', function() {
+                chatInput.focus();
+                actionFeedback.textContent = `💬 chat with ${currentUserName}`;
+            });
+            document.getElementById('endCallBtn').addEventListener('click', endCall);
+            document.getElementById('nextBtn').addEventListener('click', handleRandom);
+            document.getElementById('randomBtn').addEventListener('click', handleRandom);
+            sendMsgBtn.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            setRandomPerson();
+            addChatMessage('system', '👋 welcome to 26 · random chat');
+        })();
+    </script>
+</body>
+</html>
